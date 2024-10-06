@@ -2,19 +2,16 @@
 // 部署完成后在网址后面加上这个，获取自建节点和机场聚合节点，/?token=auto或/auto或
 
 let mytoken = 'auto'; //可以随便取，或者uuid生成，https://1024tools.com/uuid
-let BotToken =''; //可以为空，或者@BotFather中输入/start，/newbot，并关注机器人
-let ChatID =''; //可以为空，或者@userinfobot中获取，/start
+let BotToken = ''; //可以为空，或者@BotFather中输入/start，/newbot，并关注机器人
+let ChatID = ''; //可以为空，或者@userinfobot中获取，/start
 let TG = 0; //小白勿动， 开发者专用，1 为推送所有的访问信息，0 为不推送订阅转换后端的访问信息与异常访问
-let FileName = 'CF-Workers-SUB';
+let FileName = 'Blahanty';
 let SUBUpdateTime = 6; //自定义订阅更新时间，单位小时
-let total = 99;//TB
-let timestamp = 4102329600000;//2099-12-31
+let total = 526336; //TB
+let timestamp = 29966643914000; //2919-08-10 11:45:14
 
 //节点链接 + 订阅链接
-let MainData = `
-vless://b7a392e2-4ef0-4496-90bc-1c37bb234904@cf.090227.xyz:443?encryption=none&security=tls&sni=edgetunnel-2z2.pages.dev&fp=random&type=ws&host=edgetunnel-2z2.pages.dev&path=%2F%3Fed%3D2048#%E5%8A%A0%E5%85%A5%E6%88%91%E7%9A%84%E9%A2%91%E9%81%93t.me%2FCMLiussss%E8%A7%A3%E9%94%81%E6%9B%B4%E5%A4%9A%E4%BC%98%E9%80%89%E8%8A%82%E7%82%B9
-https://sub.xf.free.hr/auto
-`
+let MainData = ``
 
 let urls = [];
 let subconverter = "SUBAPI.fxxk.dedyn.io"; //在线订阅转换后端，目前使用CM的订阅转换功能。支持自建psub 可自行搭建https://github.com/bulianglin/psub
@@ -22,17 +19,17 @@ let subconfig = "https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/conf
 let subProtocol = 'https';
 
 export default {
-	async fetch (request,env) {
+	async fetch(request, env) {
 		const userAgentHeader = request.headers.get('User-Agent');
 		const userAgent = userAgentHeader ? userAgentHeader.toLowerCase() : "null";
 		const url = new URL(request.url);
 		const token = url.searchParams.get('token');
 		mytoken = env.TOKEN || mytoken;
 		BotToken = env.TGTOKEN || BotToken;
-		ChatID = env.TGID || ChatID; 
-		TG =  env.TG || TG; 
+		ChatID = env.TGID || ChatID;
+		TG = env.TG || TG;
 		subconverter = env.SUBAPI || subconverter;
-		if( subconverter.includes("http://") ){
+		if (subconverter.includes("http://")) {
 			subconverter = subconverter.split("//")[1];
 			subProtocol = 'http';
 		} else {
@@ -41,22 +38,22 @@ export default {
 		subconfig = env.SUBCONFIG || subconfig;
 		FileName = env.SUBNAME || FileName;
 		MainData = env.LINK || MainData;
-		if(env.LINKSUB) urls = await ADD(env.LINKSUB);
+		if (env.LINKSUB) urls = await ADD(env.LINKSUB);
 
 		const currentDate = new Date();
-		currentDate.setHours(0, 0, 0, 0); 
+		currentDate.setHours(0, 0, 0, 0);
 		const timeTemp = Math.ceil(currentDate.getTime() / 1000);
 		const fakeToken = await MD5MD5(`${mytoken}${timeTemp}`);
 		//console.log(`${fakeUserID}\n${fakeHostName}`); // 打印fakeID
 
-		let UD = Math.floor(((timestamp - Date.now())/timestamp * total * 1099511627776 )/2);
-		total = total * 1099511627776 ;
-		let expire= Math.floor(timestamp / 1000) ;
+		let UD = 114 * 1099511627776 / 2;
+		total = total * 1099511627776;
+		let expire = Math.floor(timestamp / 1000);
 		SUBUpdateTime = env.SUBUPTIME || SUBUpdateTime;
 
 		let 重新汇总所有链接 = await ADD(MainData + '\n' + urls.join('\n'));
-		let 自建节点 ="";
-		let 订阅链接 ="";
+		let 自建节点 = "";
+		let 订阅链接 = "";
 		for (let x of 重新汇总所有链接) {
 			if (x.toLowerCase().startsWith('http')) {
 				订阅链接 += x + '\n';
@@ -67,12 +64,12 @@ export default {
 		MainData = 自建节点;
 		urls = await ADD(订阅链接);
 
-		if ( !(token == mytoken || token == fakeToken || url.pathname == ("/"+ mytoken) || url.pathname.includes("/"+ mytoken + "?")) ) {
-			if ( TG == 1 && url.pathname !== "/" && url.pathname !== "/favicon.ico" ) await sendMessage(`#异常访问 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgent}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
+		if (!(token == mytoken || token == fakeToken || url.pathname == ("/" + mytoken) || url.pathname.includes("/" + mytoken + "?"))) {
+			if (TG == 1 && url.pathname !== "/" && url.pathname !== "/favicon.ico") await sendMessage(`#异常访问 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgent}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
 			if (env.URL302) return Response.redirect(env.URL302, 302);
 			else if (env.URL) return await proxyURL(env.URL, url);
-			else return new Response(await nginx(), { 
-				status: 200 ,
+			else return new Response(await nginx(), {
+				status: 200,
 				headers: {
 					'Content-Type': 'text/html; charset=UTF-8',
 				},
@@ -80,66 +77,66 @@ export default {
 		} else {
 			await sendMessage(`#获取订阅 ${FileName}`, request.headers.get('CF-Connecting-IP'), `UA: ${userAgentHeader}</tg-spoiler>\n域名: ${url.hostname}\n<tg-spoiler>入口: ${url.pathname + url.search}</tg-spoiler>`);
 			let 订阅格式 = 'base64';
-			if (userAgent.includes('null') || userAgent.includes('subconverter') || userAgent.includes('nekobox') || userAgent.includes(('CF-Workers-SUB').toLowerCase())){
+			if (userAgent.includes('null') || userAgent.includes('subconverter') || userAgent.includes('nekobox') || userAgent.includes(('CF-Workers-SUB').toLowerCase())) {
 				订阅格式 = 'base64';
-			} else if (userAgent.includes('clash') || ( url.searchParams.has('clash') && !userAgent.includes('subconverter'))){
+			} else if (userAgent.includes('clash') || (url.searchParams.has('clash') && !userAgent.includes('subconverter'))) {
 				订阅格式 = 'clash';
-			} else if (userAgent.includes('sing-box') || userAgent.includes('singbox') || ( (url.searchParams.has('sb') || url.searchParams.has('singbox')) && !userAgent.includes('subconverter'))){
+			} else if (userAgent.includes('sing-box') || userAgent.includes('singbox') || ((url.searchParams.has('sb') || url.searchParams.has('singbox')) && !userAgent.includes('subconverter'))) {
 				订阅格式 = 'singbox';
-			} else if (userAgent.includes('surge') || ( url.searchParams.has('surge') && !userAgent.includes('subconverter'))){
+			} else if (userAgent.includes('surge') || (url.searchParams.has('surge') && !userAgent.includes('subconverter'))) {
 				订阅格式 = 'surge';
 			}
 
-			let subconverterUrl ;
+			let subconverterUrl;
 			let 订阅转换URL = `${url.origin}/${await MD5MD5(fakeToken)}?token=${fakeToken}`;
 			//console.log(订阅转换URL);
 			let req_data = MainData;
 
 			let 追加UA = 'v2rayn';
 			if (url.searchParams.has('clash')) 追加UA = 'clash';
-			else if(url.searchParams.has('singbox')) 追加UA = 'singbox';
-			else if(url.searchParams.has('surge')) 追加UA = 'surge';
-			
+			else if (url.searchParams.has('singbox')) 追加UA = 'singbox';
+			else if (url.searchParams.has('surge')) 追加UA = 'surge';
+
 			const 请求订阅响应内容 = await getSUB(urls, 追加UA, userAgentHeader);
 			console.log(请求订阅响应内容);
 			req_data += 请求订阅响应内容[0].join('\n');
 			订阅转换URL += "|" + 请求订阅响应内容[1];
 
-			if(env.WARP) 订阅转换URL += "|" + (await ADD(env.WARP)).join("|");
+			if (env.WARP) 订阅转换URL += "|" + (await ADD(env.WARP)).join("|");
 			//修复中文错误
 			const utf8Encoder = new TextEncoder();
 			const encodedData = utf8Encoder.encode(req_data);
 			const text = String.fromCharCode.apply(null, encodedData);
-			
+
 			//去重
 			const uniqueLines = new Set(text.split('\n'));
 			const result = [...uniqueLines].join('\n');
 			//console.log(result);
-			
+
 			const base64Data = btoa(result);
 
-			if (订阅格式 == 'base64' || token == fakeToken){
-				return new Response(base64Data ,{
-					headers: { 
+			if (订阅格式 == 'base64' || token == fakeToken) {
+				return new Response(base64Data, {
+					headers: {
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
 						"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
 					}
 				});
-			} else if (订阅格式 == 'clash'){
+			} else if (订阅格式 == 'clash') {
 				subconverterUrl = `${subProtocol}://${subconverter}/sub?target=clash&url=${encodeURIComponent(订阅转换URL)}&insert=false&config=${encodeURIComponent(subconfig)}&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false&new_name=true`;
-			} else if (订阅格式 == 'singbox'){
+			} else if (订阅格式 == 'singbox') {
 				subconverterUrl = `${subProtocol}://${subconverter}/sub?target=singbox&url=${encodeURIComponent(订阅转换URL)}&insert=false&config=${encodeURIComponent(subconfig)}&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false&new_name=true`;
-			} else if (订阅格式 == 'surge'){
+			} else if (订阅格式 == 'surge') {
 				subconverterUrl = `${subProtocol}://${subconverter}/sub?target=surge&url=${encodeURIComponent(订阅转换URL)}&insert=false&config=${encodeURIComponent(subconfig)}&emoji=true&list=false&tfo=false&scv=true&fdn=false&sort=false&new_name=true`;
 			}
 			//console.log(订阅转换URL);
 			try {
 				const subconverterResponse = await fetch(subconverterUrl);
-				
+
 				if (!subconverterResponse.ok) {
-					return new Response(base64Data ,{
-						headers: { 
+					return new Response(base64Data, {
+						headers: {
 							"content-type": "text/plain; charset=utf-8",
 							"Profile-Update-Interval": `${SUBUpdateTime}`,
 							"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
@@ -148,9 +145,9 @@ export default {
 					//throw new Error(`Error fetching subconverterUrl: ${subconverterResponse.status} ${subconverterResponse.statusText}`);
 				}
 				let subconverterContent = await subconverterResponse.text();
-				if (订阅格式 == 'clash') subconverterContent =await clashFix(subconverterContent);
+				if (订阅格式 == 'clash') subconverterContent = await clashFix(subconverterContent);
 				return new Response(subconverterContent, {
-					headers: { 
+					headers: {
 						"Content-Disposition": `attachment; filename*=utf-8''${encodeURIComponent(FileName)}; filename=${FileName}`,
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
@@ -159,8 +156,8 @@ export default {
 					},
 				});
 			} catch (error) {
-				return new Response(base64Data ,{
-					headers: { 
+				return new Response(base64Data, {
+					headers: {
 						"content-type": "text/plain; charset=utf-8",
 						"Profile-Update-Interval": `${SUBUpdateTime}`,
 						"Subscription-Userinfo": `upload=${UD}; download=${UD}; total=${total}; expire=${expire}`,
@@ -175,10 +172,10 @@ async function ADD(envadd) {
 	var addtext = envadd.replace(/[	"'|\r\n]+/g, ',').replace(/,+/g, ',');  // 将空格、双引号、单引号和换行符替换为逗号
 	//console.log(addtext);
 	if (addtext.charAt(0) == ',') addtext = addtext.slice(1);
-	if (addtext.charAt(addtext.length -1) == ',') addtext = addtext.slice(0, addtext.length - 1);
+	if (addtext.charAt(addtext.length - 1) == ',') addtext = addtext.slice(0, addtext.length - 1);
 	const add = addtext.split(',');
 	//console.log(add);
-	return add ;
+	return add;
 }
 
 async function nginx() {
@@ -209,11 +206,11 @@ async function nginx() {
 	</body>
 	</html>
 	`
-	return text ;
+	return text;
 }
 
 async function sendMessage(type, ip, add_data = "") {
-	if ( BotToken !== '' && ChatID !== ''){
+	if (BotToken !== '' && ChatID !== '') {
 		let msg = "";
 		const response = await fetch(`http://ip-api.com/json/${ip}?lang=zh-CN`);
 		if (response.status == 200) {
@@ -222,8 +219,8 @@ async function sendMessage(type, ip, add_data = "") {
 		} else {
 			msg = `${type}\nIP: ${ip}\n<tg-spoiler>${add_data}`;
 		}
-	
-		let url = "https://api.telegram.org/bot"+ BotToken +"/sendMessage?chat_id=" + ChatID + "&parse_mode=HTML&text=" + encodeURIComponent(msg);
+
+		let url = "https://api.telegram.org/bot" + BotToken + "/sendMessage?chat_id=" + ChatID + "&parse_mode=HTML&text=" + encodeURIComponent(msg);
 		return fetch(url, {
 			method: 'get',
 			headers: {
@@ -243,7 +240,7 @@ function base64Decode(str) {
 
 async function MD5MD5(text) {
 	const encoder = new TextEncoder();
-  
+
 	const firstPass = await crypto.subtle.digest('MD5', encoder.encode(text));
 	const firstPassArray = Array.from(new Uint8Array(firstPass));
 	const firstHex = firstPassArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -251,19 +248,19 @@ async function MD5MD5(text) {
 	const secondPass = await crypto.subtle.digest('MD5', encoder.encode(firstHex.slice(7, 27)));
 	const secondPassArray = Array.from(new Uint8Array(secondPass));
 	const secondHex = secondPassArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
+
 	return secondHex.toLowerCase();
 }
 
 function clashFix(content) {
-	if(content.includes('wireguard') && !content.includes('remote-dns-resolve')){
+	if (content.includes('wireguard') && !content.includes('remote-dns-resolve')) {
 		let lines;
-		if (content.includes('\r\n')){
+		if (content.includes('\r\n')) {
 			lines = content.split('\r\n');
 		} else {
 			lines = content.split('\n');
 		}
-	
+
 		let result = "";
 		for (let line of lines) {
 			if (line.includes('type: wireguard')) {
@@ -332,18 +329,18 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 	const timeout = setTimeout(() => {
 		controller.abort(); // 2秒后取消所有请求
 	}, 2000);
-	
+
 	try {
 		// 使用Promise.allSettled等待所有API请求完成，无论成功或失败
 		const responses = await Promise.allSettled(api.map(apiUrl => fetch(apiUrl, {
-			method: 'get', 
+			method: 'get',
 			headers: {
 				'Accept': 'text/html,application/xhtml+xml,application/xml;',
 				'User-Agent': `${追加UA} cmliu/CF-Workers-SUB ${userAgentHeader}`
 			},
 			signal: controller.signal // 将AbortController的信号量添加到fetch请求中
 		}).then(response => response.ok ? response.text() : Promise.reject())));
-	
+
 		// 遍历所有响应
 		const modifiedResponses = responses.map((response, index) => {
 			// 检查是否请求成功
@@ -353,9 +350,9 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 				apiUrl: api[index] // 将原始的apiUrl添加到返回对象中
 			};
 		});
-	
+
 		console.log(modifiedResponses); // 输出修改后的响应数组
-	
+
 		for (const response of modifiedResponses) {
 			// 检查响应状态是否为'fulfilled'
 			if (response.status === 'fulfilled') {
@@ -363,7 +360,7 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 				if (content.includes('proxies') && content.includes('proxy-groups')) {
 					// Clash 配置
 					订阅转换URLs += "|" + response.apiUrl;
-				} else if (content.includes('outbounds') && content.includes('inbounds')){
+				} else if (content.includes('outbounds') && content.includes('inbounds')) {
 					// Singbox 配置
 					订阅转换URLs += "|" + response.apiUrl;
 				} else {
@@ -376,9 +373,9 @@ async function getSUB(api, 追加UA, userAgentHeader) {
 	} finally {
 		clearTimeout(timeout); // 清除定时器
 	}
-	
+
 	const 订阅内容 = await ADD(newapi);
 
 	// 返回处理后的结果
-	return [订阅内容,订阅转换URLs];
+	return [订阅内容, 订阅转换URLs];
 }
