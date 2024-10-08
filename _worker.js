@@ -14,9 +14,9 @@ let timestamp = 29966643914000; //2919-08-10 11:45:14
 let MainData = ``
 
 let urls = [];
-let subconverter = "SUBAPI.fxxk.dedyn.io"; //在线订阅转换后端，目前使用CM的订阅转换功能。支持自建psub 可自行搭建https://github.com/bulianglin/psub
-let subconfig = "https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/config/ACL4SSR_Online_MultiCountry.ini"; //订阅配置文件
-let subProtocol = 'https';
+let subconverter = "subconverter.yanty.top"; //在线订阅转换后端
+let subconfig = "https://raw.githubusercontent.com/weblahanty/Proxy-Subscription_URL/main/config.ini"; //订阅配置文件
+let subProtocol = 'http';
 
 export default {
 	async fetch(request, env) {
